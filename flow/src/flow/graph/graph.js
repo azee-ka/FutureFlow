@@ -41,17 +41,41 @@ const StockGraph = () => {
         `
         });
         const grid = new THREE.Mesh(gridGeometry, gridMaterial);
-        grid.rotation.x = -Math.PI / 2.7; // Rotate the grid to be slightly off-angle
+        grid.rotation.x = -Math.PI / 2.5; // Rotate the grid to be slightly off-angle
         grid.position.y = -3.0; // Center the grid vertically
         scene.add(grid);
 
+        // Create a line geometry for the graph
+        const graphGeometry = new THREE.BufferGeometry();
+        const graphMaterial = new THREE.LineBasicMaterial({ color: 0xff0644 });
+        const graph = new THREE.Line(graphGeometry, graphMaterial);
+        scene.add(graph);
+
         camera.position.z = 17;
 
-        const animate = () => {
+        const animate = (time) => {
             requestAnimationFrame(animate);
-            gridMaterial.uniforms.time.value -= 0.004; // Update the time uniform for animation
+        
+            const currentTime = time / 300000;
+            gridMaterial.uniforms.time.value = currentTime;
+        
+            const positions = [];
+            for (let i = 0; i < 100; i++) {
+                const x = i * 0.1 - 5; // Reverse the direction of the graph
+                const y = (Math.sin((i * 0.04 + currentTime) * 2 * Math.PI) )* 2.3; // Adjust the amplitude of the sine wave to bring it closer to the grid floor
+                const z = 6.5; // Position the graph closer to the screen
+                positions.push(new THREE.Vector3(x, y, z));
+            }
+        
+            graphGeometry.setFromPoints(positions);
+        
             renderer.render(scene, camera);
         };
+        
+        
+        
+        
+        
 
         animate();
 
