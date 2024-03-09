@@ -63,31 +63,36 @@ const StockGraph = () => {
         }
         graphGeometry.setFromPoints(positions);
 
+
         const animate = (time) => {
             requestAnimationFrame(animate);
-        
+
             const currentTime = time / 1000;
             gridMaterial.uniforms.time.value = currentTime;
-        
+
+            // Calculate the new y-coordinate for the rightmost point
+            const frequency1 = 0.02 + Math.sin(currentTime) * 0.005; // Adjust frequency based on current time
+            const frequency2 = 0.05 + Math.sin(currentTime * 1.5) * 0.01; // Adjust frequency based on current time
+            const amplitude1 = 1.5 + Math.sin(currentTime * 0.7) * 0.3; // Adjust amplitude based on current time
+            const amplitude2 = 1 + Math.sin(currentTime * 0.9) * 0.2; // Adjust amplitude based on current time
+            const newY = Math.sin((99 * frequency1 + currentTime) * 2 * Math.PI) * amplitude1 + Math.sin((99 * frequency2 + currentTime) * 2 * Math.PI) * amplitude2;
+
             // Update existing positions instead of creating a new array
             for (let i = 0; i < positions.length - 1; i++) {
                 positions[i].y = positions[i + 1].y;
             }
-        
-            // Calculate the new y-coordinate for the rightmost point
-            const frequency1 = 0.04 + Math.sin(currentTime) * 0.01; // Adjust frequency based on current time
-            const frequency2 = 0.1 + Math.sin(currentTime * 1.5) * 0.02; // Adjust frequency based on current time
-            const amplitude1 = 2.3 + Math.sin(currentTime * 0.7) * 0.3; // Adjust amplitude based on current time
-            const amplitude2 = 1.5 + Math.sin(currentTime * 0.9) * 0.2; // Adjust amplitude based on current time
-            const newY = Math.sin((99 * frequency1 + currentTime) * 2 * Math.PI) * amplitude1 + Math.sin((99 * frequency2 + currentTime) * 2 * Math.PI) * amplitude2;
-        
             positions[positions.length - 1].y = newY;
-        
             graphGeometry.setFromPoints(positions);
-        
+
+
             renderer.render(scene, camera);
         };
-        
+
+
+
+
+
+
 
 
         animate();
