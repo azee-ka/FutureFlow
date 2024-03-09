@@ -25,15 +25,19 @@ const StockGraph = () => {
         }
       `,
             fragmentShader: `  
-        varying vec2 vUv;
-        uniform float time;
-        void main() {
-            float speed = 0.01; // Speed of the movement
-            float offset = vUv.y; // Use only y-coordinate for offset calculation
-            float grid = smoothstep(0.05, 0.06, mod(offset * 10.0 + (time - time), 1.0)) * smoothstep(0.05, 0.06, mod(vUv.x * 10.0 + time, 1.0)); // Color for grid lines
-            float glow = 1.1; // Fixed glow intensity
-            gl_FragColor = vec4(vec3(1.0 - grid) * glow, 1.0); // Apply glow effect to the grid lines
-        }
+            varying vec2 vUv;
+            uniform float time;
+            void main() {
+                float speed = 0.01; // Speed of the movement
+                float offset = vUv.y; // Use only y-coordinate for offset calculation
+                float grid = smoothstep(0.05, 0.06, mod(offset * 10.0 + (time - time), 1.0)) * smoothstep(0.05, 0.06, mod(vUv.x * 10.0 + time, 1.0)); // Color for grid lines
+                float glow = 1.9; // Fixed glow intensity
+                vec3 boxColor = vec3(0.0, 0.0, 0.0); // Black color for boxes
+                vec3 lineColor = vec3(0.0, 1.0, 0.0); // Green color for grid lines
+                vec3 finalColor = mix(lineColor, boxColor, grid); // Mix colors based on grid value
+                gl_FragColor = vec4(finalColor * glow, 1.0); // Apply glow effect to the grid lines and boxes
+            }
+            
         `
         });
         const grid = new THREE.Mesh(gridGeometry, gridMaterial);
@@ -41,7 +45,7 @@ const StockGraph = () => {
         grid.position.y = -3.0; // Center the grid vertically
         scene.add(grid);
 
-        camera.position.z = 15;
+        camera.position.z = 17;
 
         const animate = () => {
             requestAnimationFrame(animate);
