@@ -47,35 +47,48 @@ const StockGraph = () => {
 
         // Create a line geometry for the graph
         const graphGeometry = new THREE.BufferGeometry();
-        const graphMaterial = new THREE.LineBasicMaterial({ color: 0xff0644 });
+        const graphMaterial = new THREE.LineBasicMaterial({ color: 0xff046, linewidth: 15, }); // Change color to red
         const graph = new THREE.Line(graphGeometry, graphMaterial);
         scene.add(graph);
 
         camera.position.z = 17;
 
+        // Create an initial positions array with 100 points
+        const positions = [];
+        for (let i = 0; i < 100; i++) {
+            const x = i * 0.1 - 5;
+            const y = 0;
+            const z = 6.5;
+            positions.push(new THREE.Vector3(x, y, z));
+        }
+        graphGeometry.setFromPoints(positions);
+
         const animate = (time) => {
             requestAnimationFrame(animate);
         
-            const currentTime = time / 300000;
+            const currentTime = time / 1000;
             gridMaterial.uniforms.time.value = currentTime;
         
-            const positions = [];
-            for (let i = 0; i < 100; i++) {
-                const x = i * 0.1 - 5; // Reverse the direction of the graph
-                const y = (Math.sin((i * 0.04 + currentTime) * 2 * Math.PI) )* 2.3; // Adjust the amplitude of the sine wave to bring it closer to the grid floor
-                const z = 6.5; // Position the graph closer to the screen
-                positions.push(new THREE.Vector3(x, y, z));
+            // Update existing positions instead of creating a new array
+            for (let i = 0; i < positions.length - 1; i++) {
+                positions[i].y = positions[i + 1].y;
             }
+        
+            // Calculate the new y-coordinate for the rightmost point
+            const frequency1 = 0.04 + Math.sin(currentTime) * 0.01; // Adjust frequency based on current time
+            const frequency2 = 0.1 + Math.sin(currentTime * 1.5) * 0.02; // Adjust frequency based on current time
+            const amplitude1 = 2.3 + Math.sin(currentTime * 0.7) * 0.3; // Adjust amplitude based on current time
+            const amplitude2 = 1.5 + Math.sin(currentTime * 0.9) * 0.2; // Adjust amplitude based on current time
+            const newY = Math.sin((99 * frequency1 + currentTime) * 2 * Math.PI) * amplitude1 + Math.sin((99 * frequency2 + currentTime) * 2 * Math.PI) * amplitude2;
+        
+            positions[positions.length - 1].y = newY;
         
             graphGeometry.setFromPoints(positions);
         
             renderer.render(scene, camera);
         };
         
-        
-        
-        
-        
+
 
         animate();
 
